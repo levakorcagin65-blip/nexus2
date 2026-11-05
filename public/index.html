@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS AI — Платформа автоматизации создания веб-сайтов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0A;
+    --bg-2: #0F0F0F;
+    --bg-3: #141414;
+    --teal: #00C2D1;
+    --teal-bright: #00E5FF;
+    --teal-dim: #007E8A;
+    --text: #EDEDED;
+    --text-muted: #8A8A8A;
+    --text-dim: #4A4A4A;
+    --border: #1C1C1C;
+    --border-strong: #2A2A2A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    font-size: 15px;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  /* Сетка на фоне */
+  .bg-grid {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(0, 229, 255, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.15) 1px, transparent 1px);
+    background-size: 56px 56px;
+    animation: gridMove 30s linear infinite;
+    mask-image: radial-gradient(ellipse at 50% 40%, black 40%, transparent 95%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 40%, transparent 95%);
+  }
+
+  @keyframes gridMove {
+    0%   { background-position: 0 0; }
+    100% { background-position: 56px 56px; }
+  }
+
+  /* Свечение */
+  .bg-aura {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(0, 194, 209, 0.2) 0%, transparent 60%);
+  }
+
+  header, section, footer { position: relative; z-index: 2; }
+  .section { background: rgba(10, 10, 10, 0.5); }
+  .hero { background: rgba(10, 10, 10, 0.2); }
+  .cta-section { background: rgba(10, 10, 10, 0.5); }
+  footer { background: rgba(10, 10, 10, 0.8); }
+
+  .container { max-width: 1140px; margin: 0 auto; padding: 0 40px; }
+
+  /* HEADER */
+  header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10, 10, 10, 0.9);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .logo { display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; }
+  .logo-mark { width: 22px; height: 22px; border: 1px solid var(--teal); display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--teal); font-weight: 600; }
+  .logo-text span { color: var(--teal); }
+  .nav-links { display: flex; gap: 40px; list-style: none; }
+  .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--teal); }
+  .nav-actions { display: flex; align-items: center; gap: 24px; }
+  .nav-meta { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; }
+
+  /* BUTTONS */
+  .btn { display: inline-flex; align-items: center; justify-content: center; padding: 11px 24px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; font-weight: 500; text-decoration: none; border: none; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: var(--teal); color: #0A0A0A; }
+  .btn-primary:hover { background: var(--teal-bright); }
+  .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border-strong); }
+  .btn-outline:hover { border-color: var(--teal); color: var(--teal); }
+
+  /* HERO */
+  .hero { padding: 160px 0 100px; border-bottom: 1px solid var(--border); }
+  .hero-meta { display: flex; align-items: center; gap: 16px; margin-bottom: 40px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+  .hero-meta .line { width: 32px; height: 1px; background: var(--teal); }
+  .hero-meta .status { color: var(--teal); display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; animation: pulse 2.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  
+  .hero h1 { font-size: clamp(38px, 5.5vw, 64px); font-weight: 600; line-height: 1.08; letter-spacing: -1.5px; margin-bottom: 32px; max-width: 900px; }
+  .hero h1 .accent { color: var(--teal); font-weight: 500; }
+  .hero-sub { font-size: 17px; color: var(--text-muted); max-width: 620px; margin-bottom: 56px; line-height: 1.7; font-weight: 300; }
+
+  .prompt-form { max-width: 780px; border: 1px solid var(--teal-dim); background: rgba(10, 10, 10, 0.8); padding: 8px; display: flex; gap: 8px; }
+  .prompt-form input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; padding: 14px 18px; }
+  .prompt-form input::placeholder { color: var(--text-dim); }
+  .hero-footnote { margin-top: 20px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); display: flex; gap: 32px; text-transform: uppercase; }
+  .hero-footnote span::before { content: '— '; color: var(--teal); }
+
+  /* SECTIONS */
+  .section { padding: 100px 0; border-bottom: 1px solid var(--border); }
+  .section-head { display: grid; grid-template-columns: 200px 1fr; gap: 40px; margin-bottom: 72px; }
+  .section-num { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--teal); padding-top: 8px; }
+  .section-num::before { content: ''; display: block; width: 24px; height: 1px; background: var(--teal); margin-bottom: 16px; }
+  .section-title { font-size: clamp(26px, 3.2vw, 38px); font-weight: 500; margin-bottom: 16px; }
+  .section-desc { color: var(--text-muted); font-size: 15px; font-weight: 300; max-width: 560px; }
+
+  /* STEPS */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--border); background: rgba(15, 15, 15, 0.8); }
+  .step { padding: 40px 32px; border-right: 1px solid var(--border); }
+  .step:last-child { border-right: none; }
+  .step-header { display: flex; justify-content: space-between; margin-bottom: 32px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+  .step-num { font-family: 'IBM Plex Mono', monospace; font-size: 32px; color: var(--teal); }
+  .step-tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+  .step h3 { font-size: 17px; font-weight: 500; margin-bottom: 12px; }
+  .step p { color: var(--text-muted); font-size: 13.5px; }
+
+  /* FEATURES */
+  .features { display: grid; grid-template-columns: repeat(2, 1fr); border: 1px solid var(--border); background: rgba(15, 15, 15, 0.8); }
+  .feature { padding: 40px 36px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .feature-head { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+  .feature-icon { width: 34px; height: 34px; border: 1px solid var(--teal-dim); display: flex; align-items: center; justify-content: center; color: var(--teal); font-family: 'IBM Plex Mono', monospace; }
+  .feature-code { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; }
+  .feature h3 { font-size: 16px; font-weight: 500; margin-bottom: 10px; }
+  .feature p { color: var(--text-muted); font-size: 13.5px; }
+
+  /* STATS */
+  .stats-table { border: 1px solid var(--border); display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(15, 15, 15, 0.8); }
+  .stat-cell { padding: 36px 28px; border-right: 1px solid var(--border); }
+  .stat-cell:last-child { border-right: none; }
+  .stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 16px; }
+  .stat-value { font-size: 34px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+  .stat-value .unit { color: var(--teal); font-size: 20px; }
+  .stat-note { font-size: 12px; color: var(--text-muted); }
+
+  /* CTA & FOOTER */
+  .cta-box { border: 1px solid var(--border); padding: 64px 56px; display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center; background: rgba(15, 15, 15, 0.9); }
+  .cta-actions { display: flex; flex-direction: column; gap: 12px; }
+  footer { border-top: 1px solid var(--border); padding: 56px 0 32px; }
+  .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--border); margin-bottom: 32px; }
+  .footer-brand p { color: var(--text-muted); font-size: 13px; margin-top: 16px; }
+  .footer-col h4 { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--teal); text-transform: uppercase; margin-bottom: 20px; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-col a { color: var(--text-muted); text-decoration: none; font-size: 13px; }
+  .footer-bottom { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); }
+
+  /* АДАПТИВ */
+  @media (max-width: 960px) {
+    .container { padding: 0 24px; }
+    .nav-links { display: none; }
+    .section-head { grid-template-columns: 1fr; gap: 16px; }
+    .steps, .features, .stats-table { grid-template-columns: 1fr; }
+    .step, .feature, .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+    .cta-box { grid-template-columns: 1fr; padding: 40px 28px; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    .prompt-form { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-aura"></div>
+
+<header>
+  <div class="container">
+    <nav>
+      <div class="logo">
+        <div class="logo-mark">N</div>
+        <div class="logo-text">NEXUS<span>AI</span></div>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#process">Процесс</a></li>
+        <li><a href="#tech">Технологии</a></li>
+        <li><a href="#metrics">Метрики</a></li>
+      </ul>
+      <div class="nav-actions">
+        <span class="nav-meta">v2.4.1</span>
+        <a href="#start" class="btn btn-outline">Войти</a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-meta">
+      <span class="line"></span>
+      <span>Платформа / Автоматизация</span>
+      <span class="status"><span class="status-dot"></span> Все системы работают</span>
+    </div>
+
+    <h1>Автоматизированная платформа<br><span class="accent">создания веб-сайтов</span> на базе ИИ</h1>
+    <p class="hero-sub">Корпоративное решение для генерации сайтов под ключ. Клиент описывает задачу — система проводит структурированный опрос, формирует техническое задание и публикует готовый веб-ресурс в сети.</p>
+
+    <div class="prompt-form">
+      <input type="text" id="promptInput" placeholder="Опишите требуемый веб-ресурс: отрасль, назначение, структура...">
+      <button class="btn btn-primary" id="startBtn" type="button">Запустить</button>
+    </div>
+
+    <div class="hero-footnote">
+      <span>Предварительный просмотр бесплатно</span>
+      <span>Без регистрации</span>
+      <span>Среднее время: 4 минуты</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="process">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-num">01 — Процесс</div>
+      <div>
+        <h2 class="section-title">Трёхступенчатый цикл генерации</h2>
+        <p class="section-desc">Полностью автоматизированный конвейер: от первичного запроса до публикации веб-ресурса в сети. Без участия менеджеров и разработчиков.</p>
+      </div>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-header"><div class="step-num">01</div><div class="step-tag">Input</div></div>
+        <h3>Первичный запрос</h3>
+        <p>Клиент формулирует задачу в свободной форме: отрасль, назначение, целевая аудитория.</p>
+      </div>
+      <div class="step">
+        <div class="step-header"><div class="step-num">02</div><div class="step-tag">Survey</div></div>
+        <h3>Структурированный опрос</h3>
+        <p>ИИ формирует уточняющие вопросы по структуре, контенту и стилистике.</p>
+      </div>
+      <div class="step">
+        <div class="step-header"><div class="step-num">03</div><div class="step-tag">Deploy</div></div>
+        <h3>Публикация</h3>
+        <p>Готовый адаптивный сайт автоматически разворачивается в облаке.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tech">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-num">02 — Технологии</div>
+      <div>
+        <h2 class="section-title">Архитектура платформы</h2>
+        <p class="section-desc">Языковые модели, шаблонизаторы и облачная инфраструктура объединены в единый конвейер.</p>
+      </div>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-head"><div class="feature-icon">A1</div><div class="feature-code">MODULE / GENERATION</div></div>
+        <h3>Генерация за минуты</h3>
+        <p>Среднее время от запроса до публикации — 4 минуты.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-icon">A2</div><div class="feature-code">MODULE / LAYOUT</div></div>
+        <h3>Адаптивная вёрстка</h3>
+        <p>Каждый сайт оптимизирован под мобильные устройства и десктоп.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-icon">A3</div><div class="feature-code">MODULE / SEO</div></div>
+        <h3>SEO-оптимизация</h3>
+        <p>Автоматическая настройка мета-тегов и скорости загрузки.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-head"><div class="feature-icon">A4</div><div class="feature-code">MODULE / DOMAIN</div></div>
+        <h3>Подключение домена</h3>
+        <p>Интеграция собственного домена в один клик.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="metrics">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-num">03 — Метрики</div>
+      <div>
+        <h2 class="section-title">Показатели платформы</h2>
+        <p class="section-desc">Данные обновляются в режиме реального времени.</p>
+      </div>
+    </div>
+    <div class="stats-table">
+      <div class="stat-cell">
+        <div class="stat-label">Среднее время</div>
+        <div class="stat-value">4<span class="unit">мин</span></div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Сайтов создано</div>
+        <div class="stat-value">12<span class="unit">400+</span></div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Удовлетворённость</div>
+        <div class="stat-value">98<span class="unit">%</span></div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-label">Доступность</div>
+        <div class="stat-value">24<span class="unit">/7</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="start">
+  <div class="container">
+    <div class="cta-box">
+      <div>
+        <h2>Начните генерацию веб-ресурса</h2>
+        <p>Опишите задачу — система выполнит опрос и опубликует готовый сайт.</p>
+      </div>
+      <div class="cta-actions">
+        <button class="btn btn-primary" id="startBtn2" type="button">Создать сайт</button>
+        <a href="#contact" class="btn btn-outline">Связаться</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo">
+          <div class="logo-mark">N</div>
+          <div class="logo-text">NEXUS<span>AI</span></div>
+        </div>
+        <p>Платформа автоматизации создания веб-сайтов на базе ИИ.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Платформа</h4>
+        <ul><li><a href="#process">Процесс</a></li><li><a href="#tech">Технологии</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Компания</h4>
+        <ul><li><a href="#">О нас</a></li><li><a href="#">Контакты</a></li></ul>
+      </div>
+      <div class="footer-col">
+        <h4>Правовое</h4>
+        <ul><li><a href="#">Условия</a></li><li><a href="#">Конфиденциальность</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 NEXUS AI · Все права защищены</div>
+      <div>Сделано в России · <span class="teal">build v2.4.1</span></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Этот скрипт сработает, как только загрузится страница
+  document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('promptInput');
+    const btn1 = document.getElementById('startBtn');
+    const btn2 = document.getElementById('startBtn2');
+
+    function goToSurvey() {
+      const value = input.value.trim();
+      if (!value) {
+        // Если поле пустое — подсвечиваем его красным
+        input.focus();
+        input.style.borderColor = '#ff4444';
+        setTimeout(() => { input.style.borderColor = 'transparent'; }, 1200);
+        return;
+      }
+      // Если текст есть — сохраняем и переходим
+      sessionStorage.setItem('initialPrompt', value);
+      window.location.href = '/survey.html';
+    }
+
+    // Привязываем клики к кнопкам
+    if (btn1) btn1.addEventListener('click', goToSurvey);
+    if (btn2) btn2.addEventListener('click', goToSurvey);
+
+    // Привязываем Enter к полю ввода
+    if (input) {
+      input.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          goToSurvey();
+        }
+      });
+    }
+  });
+</script>
+
+</body>
+</html>

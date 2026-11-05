@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS AI — Генерация сайта</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0A0A;
+    --bg-2: #0F0F0F;
+    --teal: #00C2D1;
+    --teal-bright: #00E5FF;
+    --text: #EDEDED;
+    --text-muted: #8A8A8A;
+    --text-dim: #4A4A4A;
+    --border: #1C1C1C;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(0, 194, 209, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 194, 209, 0.06) 1px, transparent 1px);
+    background-size: 56px 56px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at 50% 40%, black 40%, transparent 95%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 40%, transparent 95%);
+  }
+  header, main { position: relative; z-index: 1; }
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(12px);
+  }
+  .logo { font-size: 13px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; }
+  .logo span { color: var(--teal); }
+  .step { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+  main { flex: 1; max-width: 820px; width: 100%; margin: 0 auto; padding: 40px 32px; display: flex; flex-direction: column; gap: 16px; }
+  .chat { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; min-height: 400px; }
+  .msg { padding: 16px 20px; border: 1px solid var(--border); max-width: 85%; line-height: 1.65; font-size: 14px; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .msg.ai { background: var(--bg-2); align-self: flex-start; border-left: 2px solid var(--teal); }
+  .msg.user { background: rgba(0, 194, 209, 0.08); align-self: flex-end; border-right: 2px solid var(--teal); }
+  .msg.sys { color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; font-size: 11px; text-align: center; align-self: center; border: none; padding: 8px; max-width: 100%; }
+  .form { display: flex; gap: 8px; border: 1px solid var(--teal-dim, #007E8A); background: var(--bg-2); padding: 6px; transition: border-color 0.2s; }
+  .form:focus-within { border-color: var(--teal-bright); box-shadow: 0 0 32px rgba(0, 229, 255, 0.25); }
+  .form input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: inherit; font-size: 14px; padding: 12px 16px; }
+  .form input::placeholder { color: var(--text-dim); }
+  .form button { background: var(--teal); color: #0A0A0A; border: none; padding: 12px 24px; font-family: inherit; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+  .form button:hover:not(:disabled) { background: var(--teal-bright); box-shadow: 0 0 20px rgba(0, 229, 255, 0.5); }
+  .form button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .progress { border: 1px solid var(--border); padding: 20px; background: var(--bg-2); font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-muted); letter-spacing: 0.5px; }
+  .progress .step-line { padding: 6px 0; }
+  .progress .step-line.active { color: var(--teal); }
+  .progress .step-line.done::before { content: '✓ '; color: var(--teal); }
+  .progress .step-line.active::before { content: '› '; }
+  .result { text-align: center; padding: 40px 20px; border: 1px solid var(--teal); background: var(--bg-2); box-shadow: 0 0 60px rgba(0, 194, 209, 0.2); }
+  .result h2 { font-size: 22px; margin-bottom: 12px; font-weight: 500; color: var(--teal-bright); text-shadow: 0 0 24px rgba(0, 229, 255, 0.5); }
+  .result p { color: var(--text-muted); font-size: 14px; margin-bottom: 8px; }
+  .result a { display: inline-block; margin-top: 20px; padding: 12px 28px; background: var(--teal); color: #0A0A0A; text-decoration: none; font-weight: 500; font-size: 13px; transition: all 0.2s; }
+  .result a:hover { background: var(--teal-bright); box-shadow: 0 0 24px rgba(0, 229, 255, 0.6); }
+  @media (max-width: 600px) { header { padding: 14px 20px; } main { padding: 24px 20px; } .msg { max-width: 95%; } .form { flex-direction: column; } .form button { width: 100%; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">NEXUS<span>AI</span></div>
+  <div class="step" id="stepLabel">Опрос / Шаг 1</div>
+</header>
+
+<main>
+  <div class="chat" id="chat"></div>
+  <div class="form" id="form">
+    <input type="text" id="input" placeholder="Ваш ответ..." autocomplete="off">
+    <button id="send" onclick="sendMessage()">Отправить</button>
+  </div>
+</main>
+
+<script>
+  const sessionId = crypto.randomUUID();
+  const chat = document.getElementById('chat');
+  const input = document.getElementById('input');
+  const sendBtn = document.getElementById('send');
+  const form = document.getElementById('form');
+  const stepLabel = document.getElementById('stepLabel');
+  let turn = 1;
+
+  function addMsg(text, type) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + type;
+    div.textContent = text;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  function setBusy(busy) {
+    input.disabled = busy;
+    sendBtn.disabled = busy;
+    sendBtn.textContent = busy ? '...' : 'Отправить';
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    addMsg(text, 'user');
+    input.value = '';
+    setBusy(true);
+
+    try {
+      const res = await fetch('/api/survey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId, userMessage: text }),
+      });
+      const data = await res.json();
+
+      // ИСПРАВЛЕНИЕ ОШИБКИ [object Object]
+      if (data.error) {
+        const errorText = typeof data.error === 'object' ? JSON.stringify(data.error) : data.error;
+        addMsg('Ошибка: ' + errorText, 'sys');
+        setBusy(false);
+        return;
+      }
+
+      if (data.done) {
+        addMsg('Опрос завершён. Формирую ТЗ и генерирую сайт...', 'sys');
+        form.style.display = 'none';
+        stepLabel.textContent = 'Генерация / Шаг 2';
+        await runGeneration(data.prompt);
+        return;
+      }
+
+      addMsg(data.reply, 'ai');
+      turn++;
+      stepLabel.textContent = `Опрос / Шаг ${Math.min(turn, 6)}`;
+    } catch (e) {
+      addMsg('Ошибка соединения: ' + e.message, 'sys');
+    }
+    setBusy(false);
+  }
+
+  async function runGeneration(prompt) {
+    const progress = document.createElement('div');
+    progress.className = 'progress';
+    progress.innerHTML = `
+      <div class="step-line active" id="p1">1. Формирование технического задания</div>
+      <div class="step-line" id="p2">2. Генерация HTML-кода</div>
+      <div class="step-line" id="p3">3. Публикация в сети</div>
+    `;
+    chat.appendChild(progress);
+    chat.scrollTop = chat.scrollHeight;
+
+    document.getElementById('p1').classList.remove('active');
+    document.getElementById('p1').classList.add('done');
+    document.getElementById('p2').classList.add('active');
+
+    let html;
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        const errorText = typeof data.error === 'object' ? JSON.stringify(data.error) : data.error;
+        throw new Error(errorText);
+      }
+      html = data.html;
+    } catch (e) {
+      addMsg('Ошибка генерации: ' + e.message, 'sys');
+      return;
+    }
+
+    document.getElementById('p2').classList.remove('active');
+    document.getElementById('p2').classList.add('done');
+    document.getElementById('p3').classList.add('active');
+    stepLabel.textContent = 'Публикация';
+
+    let url;
+    try {
+      const res = await fetch('/api/publish-netlify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ html, siteName: 'nexus-' + sessionId.slice(0, 8) }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        const errorText = typeof data.error === 'object' ? JSON.stringify(data.error) : data.error;
+        throw new Error(errorText);
+      }
+      url = data.url;
+    } catch (e) {
+      addMsg('Ошибка публикации: ' + e.message, 'sys');
+      return;
+    }
+
+    document.getElementById('p3').classList.remove('active');
+    document.getElementById('p3').classList.add('done');
+    stepLabel.textContent = 'Готово';
+
+    const result = document.createElement('div');
+    result.className = 'result';
+    result.innerHTML = `
+      <h2>Ваш сайт готов</h2>
+      <p>Сгенерирован и опубликован в сети</p>
+      <a href="${url}" target="_blank" rel="noopener">Открыть сайт →</a>
+    `;
+    chat.appendChild(result);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  // Автостарт
+  (async () => {
+    setBusy(true);
+    try {
+      const res = await fetch('/api/survey', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionId }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        const errorText = typeof data.error === 'object' ? JSON.stringify(data.error) : data.error;
+        addMsg('Ошибка: ' + errorText, 'sys');
+      } else if (data.reply) {
+        addMsg(data.reply, 'ai');
+      }
+    } catch (e) {
+      addMsg('Ошибка соединения: ' + e.message, 'sys');
+    }
+    setBusy(false);
+    input.focus();
+  })();
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+</script>
+</body>
+</html>
