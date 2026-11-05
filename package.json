@@ -10,7 +10,7 @@
     "archiver": "^7.0.1",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "gigachat": "^1.0.7",
+    "gigachat": "^0.0.20",
     "openai": "^4.60.0"
   }
 }
